@@ -13,8 +13,8 @@ default: &default
   adapter: mysql2
   encoding: utf8mb4
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: root
-  password:
+  username: <%= ENV.fetch("DB_USER") { "cryptmind" } %>
+  password: <%= ENV.fetch("DB_PASS") { "cryptmindpass" } %>
   host: <%= ENV.fetch("DB_HOST") { "127.0.0.1" } %>
 
 development:
@@ -52,8 +52,6 @@ production:
   primary: &primary_production
     <<: *default
     database: cryptmind_production
-    username: cryptmind
-    password: <%= ENV["CRYPTMIND_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
     database: cryptmind_production_cache
