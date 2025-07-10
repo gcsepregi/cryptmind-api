@@ -4,6 +4,24 @@ module Users
   class SessionsController < Devise::SessionsController
     respond_to :json
 
+    def create
+      self.resource = warden.authenticate!(auth_options)
+      sign_in(resource_name, resource)
+
+      # Build JWT payload the same way devise-jwt does
+      payload, token = Warden::JWTAuth::UserEncoder.new.call(resource, :user, nil)
+      jti = token["jti"]
+
+      resource.user_sessions.create!(
+        user_agent: request.user_agent,
+        ip_address: request.remote_ip,
+        last_seen_at: Time.current,
+        jwt_jti: jti
+      )
+
+      respond_with resource
+    end
+
     private
 
     def respond_with(resource, _opts = {})
