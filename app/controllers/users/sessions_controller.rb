@@ -9,8 +9,9 @@ module Users
       sign_in(resource_name, resource)
 
       # Build JWT payload the same way devise-jwt does
-      payload, token = Warden::JWTAuth::UserEncoder.new.call(resource, :user, nil)
-      jti = token["jti"]
+      token = request.env["warden-jwt_auth.token"]
+      payload = Warden::JWTAuth::TokenDecoder.new.call(token)
+      jti = payload["jti"]
 
       resource.user_sessions.create!(
         user_agent: request.user_agent,
