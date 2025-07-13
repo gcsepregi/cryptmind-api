@@ -12,6 +12,7 @@ Rails.application.routes.draw do
              }
 
   get "tools/ping" => "tools/ping#index"
+  get "me" => "users/users#me"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

@@ -2,6 +2,7 @@
 
 module Users
   class RegistrationsController < Devise::RegistrationsController
+    before_action :configure_permitted_parameters, if: :devise_controller?
     respond_to :json
 
     def create
@@ -29,6 +30,10 @@ module Users
           errors: resource.errors.full_messages
         }, status: :unprocessable_entity
       end
+    end
+
+    def configure_permitted_parameters
+      devise_parameter_sanitizer.permit(:sign_up, keys: [:nickname])
     end
   end
 end
