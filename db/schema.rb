@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_13_105653) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_13_182409) do
+  create_table "journals", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "entry"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_journals_on_user_id"
+  end
+
   create_table "jwt_denylists", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "jti"
     t.datetime "exp"
@@ -43,5 +51,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_13_105653) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "journals", "users"
   add_foreign_key "user_sessions", "users"
 end
