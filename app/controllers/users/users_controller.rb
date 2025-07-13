@@ -2,7 +2,6 @@
 
 module Users
   class UsersController < ApplicationController
-
     def me
       render json: {
         id: current_user.id,
@@ -11,6 +10,5 @@ module Users
         picture: nil
       }, status: :ok
     end
-
   end
 end
