@@ -5,7 +5,7 @@ module Journals
     respond_to :json
 
     def index
-      @journals = Journal.where(user_id: current_user.id).order(created_at: :desc)
+      @journals = Journal.where(user_id: current_user.id)
       render json: @journals.to_json, status: :ok
     end
 
