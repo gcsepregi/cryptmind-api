@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   get "tools/ping" => "tools/ping#index"
   get "me" => "users/users#me"
+  get "/journals", to: "journals#all"
   get "/journals/:journal_type", to: "journals#index", as: :journal_entries
   post "/journals/:journal_type", to: "journals#create"
   get "/journals/:journal_type/:id", to: "journals#show", as: :journal_entry
