@@ -1,6 +1,6 @@
 class JournalsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_journal_type
+  before_action :set_journal_type, except: [:dashboard]
   before_action :set_journal_entry, only: [ :show, :update, :destroy ]
 
   skip_before_action :set_journal_type, only: [:all]
@@ -8,6 +8,25 @@ class JournalsController < ApplicationController
   def all
     @journal_entries = current_user.journal_entries.includes(:tags).order("created_at DESC")
     render json: @journal_entries.as_json(include: :tags)
+  end
+
+  # GET /dashboard
+  def dashboard
+    total_entries = current_user.journal_entries.count
+    tag_counts = current_user.tags
+      .joins(:journal_entries)
+      .group('tags.id', 'tags.name')
+      .order('COUNT(journal_entries.id) DESC')
+      .limit(5)
+      .count('journal_entries.id')
+
+    trending_tags = tag_counts.map { |(id, name), count| { id: id, name: name, count: count } }
+
+    render json: {
+      message: "Welcome, #{current_user.nickname || current_user.email}!",
+      total_entries: total_entries,
+      trending_tags: trending_tags
+    }
   end
 
   # GET /journals/:journal_type

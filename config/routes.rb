@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   patch "/journals/:journal_type/:id", to: "journals#update"
   put "/journals/:journal_type/:id", to: "journals#update"
   delete "/journals/:journal_type/:id", to: "journals#destroy"
+  get '/dashboard', to: 'journals#dashboard'
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
