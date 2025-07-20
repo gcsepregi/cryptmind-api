@@ -13,9 +13,6 @@ Rails.application.routes.draw do
 
   get "tools/ping" => "tools/ping#index"
   get "me" => "users/users#me"
-  resource "journal" do
-    resources :entries, controller: "journals/journal"
-  end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
