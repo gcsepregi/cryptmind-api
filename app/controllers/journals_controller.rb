@@ -6,13 +6,13 @@ class JournalsController < ApplicationController
   skip_before_action :set_journal_type, only: [:all]
 
   def all
-    @journal_entries = current_user.journal_entries.includes(:tags)
+    @journal_entries = current_user.journal_entries.includes(:tags).order("created_at DESC")
     render json: @journal_entries.as_json(include: :tags)
   end
 
   # GET /journals/:journal_type
   def index
-    @journal_entries = current_user.journal_entries.where(journal_type: @journal_type).includes(:tags)
+    @journal_entries = current_user.journal_entries.where(journal_type: @journal_type).includes(:tags).order("created_at DESC")
     render json: @journal_entries.as_json(include: :tags)
   end
 
