@@ -14,13 +14,14 @@ Rails.application.routes.draw do
   get "tools/ping" => "tools/ping#index"
   get "me" => "users/users#me"
   get "/journals", to: "journals#all"
+  get "/journals/recents", to: "journals#recents"
+  get "/journals/stats", to: "journals#stats"
   get "/journals/:journal_type", to: "journals#index", as: :journal_entries
   post "/journals/:journal_type", to: "journals#create"
   get "/journals/:journal_type/:id", to: "journals#show", as: :journal_entry
   patch "/journals/:journal_type/:id", to: "journals#update"
   put "/journals/:journal_type/:id", to: "journals#update"
   delete "/journals/:journal_type/:id", to: "journals#destroy"
-  get '/dashboard', to: 'journals#dashboard'
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

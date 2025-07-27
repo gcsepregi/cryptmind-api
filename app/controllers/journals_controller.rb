@@ -1,38 +1,37 @@
 class JournalsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_journal_type, except: [:dashboard]
+  before_action :set_journal_type, except: [ :recents, :stats ]
   before_action :set_journal_entry, only: [ :show, :update, :destroy ]
 
   skip_before_action :set_journal_type, only: [:all]
 
   def all
-    @journal_entries = current_user.journal_entries.includes(:tags).order("created_at DESC")
-    render json: @journal_entries.as_json(include: :tags)
-  end
+    @journal_entries = current_user.journal_entries.includes(:tags)
+    if params[:from_date].present?
+      @journal_entries = @journal_entries.where("created_at >= ?", Date.parse(params[:from_date].to_s))
+    end
 
-  # GET /dashboard
-  def dashboard
-    total_entries = current_user.journal_entries.count
-    tag_counts = current_user.tags
-      .joins(:journal_entries)
-      .group('tags.id', 'tags.name')
-      .order('COUNT(journal_entries.id) DESC')
-      .limit(5)
-      .count('journal_entries.id')
+    if params[:to_date].present?
+      @journal_entries = @journal_entries.where("created_at <= ?", Date.parse(params[:to_date].to_s).end_of_day)
+    end
 
-    trending_tags = tag_counts.map { |(id, name), count| { id: id, name: name, count: count } }
-
-    render json: {
-      message: "Welcome, #{current_user.nickname || current_user.email}!",
-      total_entries: total_entries,
-      trending_tags: trending_tags
-    }
+    render json: @journal_entries.order("created_at DESC").as_json(include: :tags)
   end
 
   # GET /journals/:journal_type
   def index
-    @journal_entries = current_user.journal_entries.where(journal_type: @journal_type).includes(:tags).order("created_at DESC")
-    render json: @journal_entries.as_json(include: :tags)
+    @journal_entries = current_user.journal_entries.where(journal_type: @journal_type).includes(:tags)
+
+    # Apply date filtering if provided
+    if params[:from_date].present?
+      @journal_entries = @journal_entries.where("created_at >= ?", Date.parse(params[:from_date]))
+    end
+
+    if params[:to_date].present?
+      @journal_entries = @journal_entries.where("created_at <= ?", Date.parse(params[:to_date]).end_of_day)
+    end
+
+    render json: @journal_entries.order("created_at DESC").as_json(include: :tags)
   end
 
   # GET /journals/:journal_type/:id
@@ -65,6 +64,17 @@ class JournalsController < ApplicationController
   def destroy
     @journal_entry.destroy
     head :no_content
+  end
+
+  def recents
+    @journal_entries = current_user.journal_entries.includes(:tags).order("created_at DESC").limit(3)
+    render json: @journal_entries.as_json(include: :tags)
+  end
+
+  def stats
+    @stats = current_user.journal_entries.group("journal_type").count
+    @total = current_user.journal_entries.count
+    render json: {stats: @stats, total: @total}
   end
 
   private
