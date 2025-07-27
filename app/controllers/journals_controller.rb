@@ -1,9 +1,7 @@
 class JournalsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_journal_type, except: [ :recents, :stats ]
+  before_action :set_journal_type, except: [ :all, :recents, :stats ]
   before_action :set_journal_entry, only: [ :show, :update, :destroy ]
-
-  skip_before_action :set_journal_type, only: [:all]
 
   def all
     @journal_entries = current_user.journal_entries.includes(:tags)
