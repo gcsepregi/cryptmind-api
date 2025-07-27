@@ -32,11 +32,11 @@ class JournalsController < ApplicationController
 
     # Apply date filtering if provided
     if params[:from_date].present?
-      @journal_entries = @journal_entries.where("created_at >= ?", Date.parse(params[:from_date]))
+      @journal_entries = @journal_entries.where("created_at >= ?", Date.parse(params[:from_date].to_s))
     end
 
     if params[:to_date].present?
-      @journal_entries = @journal_entries.where("created_at <= ?", Date.parse(params[:to_date]).end_of_day)
+      @journal_entries = @journal_entries.where("created_at <= ?", Date.parse(params[:to_date].to_s).end_of_day)
     end
 
     render json: @journal_entries.order("created_at DESC").as_json(include: :tags)
