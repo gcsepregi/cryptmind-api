@@ -7,12 +7,20 @@ class JournalsController < ApplicationController
 
   def all
     @journal_entries = current_user.journal_entries.includes(:tags)
-    if params[:from_date].present?
+    if params[:from_date].present? and !params[:from_date].empty?
       @journal_entries = @journal_entries.where("created_at >= ?", Date.parse(params[:from_date].to_s))
     end
 
-    if params[:to_date].present?
+    if params[:to_date].present? and !params[:to_date].empty?
       @journal_entries = @journal_entries.where("created_at <= ?", Date.parse(params[:to_date].to_s).end_of_day)
+    end
+
+    if params[:type].present? and params[:type] != "all"
+      @journal_entries = @journal_entries.where(journal_type: params[:type])
+    end
+
+    if params[:search].present?
+      @journal_entries = @journal_entries.where("title LIKE ? OR entry LIKE ?", "%#{params[:search]}%", "%#{params[:search]}%")
     end
 
     render json: @journal_entries.order("created_at DESC").as_json(include: :tags)
