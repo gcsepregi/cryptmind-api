@@ -29,7 +29,7 @@ services:
     ports:
       - "3030:3000"
     environment:
-      SECRET_KEY_BASE: "0f1538c974e69b6f920c9594af787ed7a431004a9ec37cb25d71078bf149cdf91cd0ba7acaa83c23172383f8e885c18bed503030f6e2f38e3af28372aa2ccd49"
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
       DB_HOST: db
       DB_USER: ${DATABASE_USER}
       DB_PASS: ${DATABASE_PASSWORD}
