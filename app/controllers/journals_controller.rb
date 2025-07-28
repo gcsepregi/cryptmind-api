@@ -3,6 +3,31 @@ class JournalsController < ApplicationController
   before_action :set_journal_type, except: [ :all, :recents, :stats ]
   before_action :set_journal_entry, only: [ :show, :update, :destroy ]
 
+  # Helper method to replace numeric id with hashid in JSON response
+  def replace_id_with_hashid(json_data)
+    if json_data.is_a?(Array)
+      json_data.map do |item|
+        replace_id_with_hashid(item)
+      end
+    elsif json_data.is_a?(Hash)
+      if json_data.key?("hashid")
+        json_data["id"] = json_data["hashid"]
+        json_data.delete("hashid")
+      end
+
+      # Process nested objects like tags
+      json_data.each do |key, value|
+        if value.is_a?(Array) || value.is_a?(Hash)
+          json_data[key] = replace_id_with_hashid(value)
+        end
+      end
+
+      json_data
+    else
+      json_data
+    end
+  end
+
   def all
     @journal_entries = current_user.journal_entries.includes(:tags)
     if params[:from_date].present? and !params[:from_date].empty?
@@ -21,12 +46,14 @@ class JournalsController < ApplicationController
       @journal_entries = @journal_entries.where("title LIKE ? OR entry LIKE ?", "%#{params[:search]}%", "%#{params[:search]}%")
     end
 
-    render json: @journal_entries.order("created_at DESC").as_json(include: :tags)
+    json_data = @journal_entries.order("created_at DESC").as_json(include: { tags: { methods: [ :hashid ], only: [ :name ] } }, methods: [ :hashid ], only: [ :title, :entry, :created_at ])
+    render json: replace_id_with_hashid(json_data)
   end
 
   # GET /journals/:journal_type/:id
   def show
-    render json: @journal_entry.as_json(include: :tags)
+    json_data = @journal_entry.as_json(include: :tags, methods: [ :hashid ])
+    render json: replace_id_with_hashid(json_data)
   end
 
   # POST /journals/:journal_type
@@ -34,7 +61,8 @@ class JournalsController < ApplicationController
     @journal_entry = current_user.journal_entries.new(journal_entry_params.merge(journal_type: @journal_type))
     if @journal_entry.save
       process_tags(@journal_entry)
-      render json: @journal_entry.as_json(include: :tags), status: :created
+      json_data = @journal_entry.as_json(include: :tags, methods: [ :hashid ])
+      render json: replace_id_with_hashid(json_data), status: :created
     else
       render json: { errors: @journal_entry.errors.full_messages }, status: :unprocessable_entity
     end
@@ -44,7 +72,8 @@ class JournalsController < ApplicationController
   def update
     if @journal_entry.update(journal_entry_params)
       process_tags(@journal_entry)
-      render json: @journal_entry.as_json(include: :tags)
+      json_data = @journal_entry.as_json(include: :tags, methods: [ :hashid ])
+      render json: replace_id_with_hashid(json_data)
     else
       render json: { errors: @journal_entry.errors.full_messages }, status: :unprocessable_entity
     end
@@ -58,13 +87,14 @@ class JournalsController < ApplicationController
 
   def recents
     @journal_entries = current_user.journal_entries.includes(:tags).order("created_at DESC").limit(3)
-    render json: @journal_entries.as_json(include: :tags)
+    json_data = @journal_entries.as_json(include: :tags, methods: [ :hashid ])
+    render json: replace_id_with_hashid(json_data)
   end
 
   def stats
     @stats = current_user.journal_entries.group("journal_type").count
     @total = current_user.journal_entries.count
-    render json: {stats: @stats, total: @total}
+    render json: { stats: @stats, total: @total }
   end
 
   private

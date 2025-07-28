@@ -50,3 +50,5 @@ gem "rack-cors"
 gem "jwt"
 gem "devise"
 gem "devise-jwt"
+
+gem "hashid-rails"
