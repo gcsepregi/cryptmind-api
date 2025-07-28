@@ -16,7 +16,6 @@ Rails.application.routes.draw do
   get "/journals", to: "journals#all"
   get "/journals/recents", to: "journals#recents"
   get "/journals/stats", to: "journals#stats"
-  get "/journals/:journal_type", to: "journals#index", as: :journal_entries
   post "/journals/:journal_type", to: "journals#create"
   get "/journals/:journal_type/:id", to: "journals#show", as: :journal_entry
   patch "/journals/:journal_type/:id", to: "journals#update"
