@@ -6,5 +6,4 @@ class ApplicationRecord < ActiveRecord::Base
   def to_param
     hashid
   end
-
 end
