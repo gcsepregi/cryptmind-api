@@ -46,7 +46,7 @@ class JournalsController < ApplicationController
       @journal_entries = @journal_entries.where("title LIKE ? OR entry LIKE ?", "%#{params[:search]}%", "%#{params[:search]}%")
     end
 
-    json_data = @journal_entries.order("created_at DESC").as_json(include: { tags: { methods: [ :hashid ], only: [ :name ] } }, methods: [ :hashid ], only: [ :title, :entry, :created_at ])
+    json_data = @journal_entries.order("created_at DESC").as_json(include: { tags: { methods: [ :hashid ], only: [ :name ] } }, methods: [ :hashid ], only: [ :title, :entry, :created_at, :journal_type ])
     render json: replace_id_with_hashid(json_data)
   end
 
@@ -106,7 +106,8 @@ class JournalsController < ApplicationController
   end
 
   def set_journal_entry
-    @journal_entry = current_user.journal_entries.find_by!(id: params[:id], journal_type: @journal_type)
+    @journal_entry = current_user.journal_entries.find_by_hashid!(params[:id])
+    render json: { error: "Invalid journal entry" }, status: :bad_request unless @journal_entry.journal_type == @journal_type
   end
 
   def journal_entry_params
