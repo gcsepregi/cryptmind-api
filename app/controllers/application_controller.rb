@@ -22,7 +22,7 @@ class ApplicationController < ActionController::API
     return nil unless token
 
     begin
-      decoded_token = JWT.decode(token, Rails.application.credentials.devise[:jwt_secret_key], true, algorithm: "HS256")
+      decoded_token = JWT.decode(token, ENV["DEVISE_JWT_SECRET"] || Rails.application.credentials.devise[:jwt_secret_key], true, algorithm: "HS256")
       decoded_token.first["jti"]
     rescue JWT::DecodeError
       nil
