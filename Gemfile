@@ -52,3 +52,5 @@ gem "devise"
 gem "devise-jwt"
 
 gem "hashid-rails"
+
+gem "pundit", "~> 2.5"

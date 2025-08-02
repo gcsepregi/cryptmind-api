@@ -1,7 +1,10 @@
 class ApplicationController < ActionController::API
+  include Pundit
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :authenticate_user!, unless: :devise_controller?
   before_action :update_user_session
+
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   protected
 
@@ -34,4 +37,11 @@ class ApplicationController < ActionController::API
       render json: { error: "Unauthorized" }, status: :unauthorized
     end
   end
+
+  private
+
+  def user_not_authorized
+    render json: { error: "Access denied" }, status: :forbidden
+  end
+
 end
