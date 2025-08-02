@@ -14,7 +14,10 @@ puts "Seeding roles..."
 end
 
 puts "Creating default admin user..."
-admin = User.find_by!(email: 'necromancer.morgath@gmail.com')
+admin = User.find_or_create_by!(email: 'admin@4shards.org') do |user|
+  user.password = 'password'
+  user.nickname = 'admin'
+end
 
 admin.roles << Role.find_by(name: 'admin') unless admin.has_role?(:admin)
 

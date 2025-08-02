@@ -31,6 +31,7 @@ module Users
 
     def respond_to_on_destroy
       jwt_payload = JWT.decode(request.headers["Authorization"].split(" ").last,
+                               ENV["DEVISE_JWT_SECRET"] ||
                                Rails.application.credentials.devise[:jwt_secret_key])[0]
       current_user = User.find(jwt_payload["sub"])
       if current_user
