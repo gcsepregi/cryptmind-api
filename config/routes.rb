@@ -22,7 +22,11 @@ Rails.application.routes.draw do
   put "/journals/:journal_type/:id", to: "journals#update"
   delete "/journals/:journal_type/:id", to: "journals#destroy"
 
-  get "/admin/dashboard", to: "admin/dashboard#index"
+  namespace :admin do
+    get "/dashboard", to: "dashboard#index"
+
+    resources :users
+  end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
