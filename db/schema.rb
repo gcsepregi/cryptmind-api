@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_02_135512) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_04_203100) do
   create_table "journal_entries", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.integer "journal_type"
@@ -19,6 +19,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_02_135512) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_private"
+    t.string "mood"
+    t.string "location"
+    t.string "diary_date"
+    t.json "gratitude_list"
+    t.json "achievements"
+    t.string "dream_date"
+    t.integer "lucidity_level"
+    t.json "dream_signs"
+    t.json "dream_characters"
+    t.json "dream_emotions"
+    t.integer "dream_clarity"
+    t.string "ritual_date"
+    t.string "ritual_type"
+    t.json "ritual_tools"
+    t.json "ritual_deities"
+    t.string "ritual_purpose"
+    t.string "ritual_outcome"
+    t.integer "ritual_duration"
     t.index ["user_id"], name: "index_journal_entries_on_user_id"
   end
 

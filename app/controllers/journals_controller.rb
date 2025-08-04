@@ -111,7 +111,22 @@ class JournalsController < ApplicationController
   end
 
   def journal_entry_params
-    params.require(:journal_entry).permit(:title, :entry, :is_private)
+    permitted_params = [:title, :entry, :is_private]
+    
+    # Common Optional Metadata
+    permitted_params += [:mood, :location]
+    
+    # Type-specific fields based on journal_type
+    case @journal_type
+    when 'diary'
+      permitted_params += [:diary_date, { gratitude_list: [], achievements: [] }]
+    when 'dream'
+      permitted_params += [:dream_date, :lucidity_level, :dream_clarity, { dream_signs: [], dream_characters: [], dream_emotions: [] }]
+    when 'ritual'
+      permitted_params += [:ritual_date, :ritual_type, :ritual_purpose, :ritual_outcome, :ritual_duration, { ritual_tools: [], ritual_deities: [] }]
+    end
+    
+    params.require(:journal_entry).permit(permitted_params)
   end
 
   # Handles tag creation/association for a journal entry
