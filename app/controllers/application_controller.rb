@@ -32,6 +32,18 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def request_jwt_exp
+    token = request.headers["Authorization"]&.split(" ")&.last
+    return nil unless token
+
+    begin
+      decoded_token = JWT.decode(token, ENV["DEVISE_JWT_SECRET"] || Rails.application.credentials.devise[:jwt_secret_key], true, algorithm: "HS256")
+      decoded_token.first["exp"]
+    rescue JWT::DecodeError
+      nil
+    end
+  end
+
   def authenticate_user!
     unless current_user
       render json: { error: "Unauthorized" }, status: :unauthorized
