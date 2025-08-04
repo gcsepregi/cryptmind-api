@@ -4,8 +4,7 @@ module Admin
   class SessionsController < AdminControllerBase
     def index
       @user = User.find(params[:user_id])
-      active_sessions = @user.user_sessions.where.not(jwt_jti: JwtDenylist.select(:jti))
-      render json: @user.as_json.merge(user_sessions: active_sessions.as_json), status: :ok
+      respond_index @user.user_sessions.where.not(jwt_jti: JwtDenylist.select(:jti))
     end
 
     def destroy

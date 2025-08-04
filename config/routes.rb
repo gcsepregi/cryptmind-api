@@ -27,6 +27,7 @@ Rails.application.routes.draw do
 
     resources :users do
       resources :sessions
+      resources :journals
     end
   end
 
