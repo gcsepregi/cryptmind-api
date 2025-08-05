@@ -50,6 +50,30 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def replace_id_with_hashid(json_data)
+    if json_data.is_a?(Array)
+      json_data.map do |item|
+        replace_id_with_hashid(item)
+      end
+    elsif json_data.is_a?(Hash)
+      if json_data.key?("hashid")
+        json_data["id"] = json_data["hashid"]
+        json_data.delete("hashid")
+      end
+
+      # Process nested objects like tags
+      json_data.each do |key, value|
+        if value.is_a?(Array) || value.is_a?(Hash)
+          json_data[key] = replace_id_with_hashid(value)
+        end
+      end
+
+      json_data
+    else
+      json_data
+    end
+  end
+
   private
 
   def user_not_authorized
