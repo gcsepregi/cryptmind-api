@@ -24,6 +24,7 @@ Rails.application.routes.draw do
 
   # Mood histories routes
   resources :mood_histories
+  post "/mood_histories/sync", to: "mood_histories#sync"
 
   namespace :admin do
     get "/dashboard", to: "dashboard#index"
