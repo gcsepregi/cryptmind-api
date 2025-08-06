@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_many :user_sessions
   has_many :journal_entries, dependent: :destroy
   has_many :tags, dependent: :destroy
+  has_many :mood_histories, dependent: :destroy
   has_many :user_roles
   has_many :roles, through: :user_roles
 
@@ -24,5 +25,4 @@ class User < ApplicationRecord
       roles: role_names
     }
   end
-
 end

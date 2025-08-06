@@ -79,5 +79,4 @@ class ApplicationController < ActionController::API
   def user_not_authorized
     render json: { error: "Access denied" }, status: :forbidden
   end
-
 end

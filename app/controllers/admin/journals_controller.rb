@@ -2,7 +2,6 @@
 
 module Admin
   class JournalsController < AdminControllerBase
-
     def index
       respond_index User.find(params[:user_id]).journal_entries
     end
