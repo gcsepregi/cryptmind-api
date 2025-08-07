@@ -1,52 +1,6 @@
 class MoodHistoriesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_mood_history, only: [ :show, :update, :destroy ]
-  
-  # POST /mood_histories/sync
-  def sync
-    if params[:mood_histories].present?
-      # Handle bulk sync
-      results = []
-      errors = []
-      
-      params[:mood_histories].each do |mood_data|
-        client_id = mood_data[:id] || mood_data["id"]
-        mood = mood_data[:mood] || mood_data["mood"]
-        recorded_at = mood_data[:recorded_at] || mood_data["recorded_at"]
-        
-        mood_history = current_user.mood_histories.find_or_initialize_by(client_id: client_id)
-        mood_history.mood = mood
-        mood_history.recorded_at = recorded_at
-        
-        if mood_history.save
-          results << mood_history
-        else
-          errors << { client_id: client_id, errors: mood_history.errors.full_messages }
-        end
-      end
-      
-      if errors.empty?
-        render json: { success: true, mood_histories: results }, status: :ok
-      else
-        render json: { success: false, errors: errors }, status: :unprocessable_entity
-      end
-    else
-      # Handle single sync (backward compatibility)
-      client_id = params[:id]
-      mood = params[:mood]
-      recorded_at = params[:recorded_at]
-      
-      @mood_history = current_user.mood_histories.find_or_initialize_by(client_id: client_id)
-      @mood_history.mood = mood
-      @mood_history.recorded_at = recorded_at
-      
-      if @mood_history.save
-        render json: @mood_history, status: @mood_history.previous_changes.any? ? :ok : :created
-      else
-        render json: { errors: @mood_history.errors.full_messages }, status: :unprocessable_entity
-      end
-    end
-  end
 
   # GET /mood_histories
   def index
@@ -103,6 +57,6 @@ class MoodHistoriesController < ApplicationController
   end
 
   def mood_history_params
-    params.require(:mood_history).permit(:mood, :recorded_at, :notes, :journal_entry_id, :client_id)
+    params.require(:mood_history).permit(:mood, :recorded_at, :notes, :journal_entry_id)
   end
 end

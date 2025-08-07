@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_06_160000) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_04_203100) do
   create_table "journal_entries", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.integer "journal_type"
@@ -55,21 +55,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_06_160000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
-  end
-
-  create_table "mood_histories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "journal_entry_id"
-    t.string "mood", null: false
-    t.datetime "recorded_at", null: false
-    t.text "notes"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "client_id"
-    t.index ["journal_entry_id"], name: "index_mood_histories_on_journal_entry_id"
-    t.index ["user_id", "client_id"], name: "index_mood_histories_on_user_id_and_client_id", unique: true
-    t.index ["user_id", "recorded_at"], name: "index_mood_histories_on_user_id_and_recorded_at"
-    t.index ["user_id"], name: "index_mood_histories_on_user_id"
   end
 
   create_table "roles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -123,8 +108,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_06_160000) do
   add_foreign_key "journal_entries", "users"
   add_foreign_key "journal_entry_tags", "journal_entries"
   add_foreign_key "journal_entry_tags", "tags"
-  add_foreign_key "mood_histories", "journal_entries"
-  add_foreign_key "mood_histories", "users"
   add_foreign_key "tags", "users"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
