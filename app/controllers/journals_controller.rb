@@ -37,7 +37,6 @@ class JournalsController < ApplicationController
     @journal_entry = current_user.journal_entries.new(journal_entry_params.merge(journal_type: @journal_type))
     if @journal_entry.save
       process_tags(@journal_entry)
-      save_mood_history(@journal_entry) if @journal_entry.mood.present?
       json_data = @journal_entry.as_json(include: :tags, methods: [ :hashid ])
       render json: replace_id_with_hashid(json_data), status: :created
     else
@@ -47,13 +46,8 @@ class JournalsController < ApplicationController
 
   # PATCH/PUT /journals/:journal_type/:id
   def update
-    old_mood = @journal_entry.mood
     if @journal_entry.update(journal_entry_params)
       process_tags(@journal_entry)
-      # Only save mood history if mood has changed
-      if @journal_entry.mood.present? && @journal_entry.mood != old_mood
-        save_mood_history(@journal_entry)
-      end
       json_data = @journal_entry.as_json(include: :tags, methods: [ :hashid ])
       render json: replace_id_with_hashid(json_data)
     else
@@ -93,21 +87,21 @@ class JournalsController < ApplicationController
   end
 
   def journal_entry_params
-    permitted_params = [ :title, :entry, :is_private ]
-
+    permitted_params = [:title, :entry, :is_private]
+    
     # Common Optional Metadata
-    permitted_params += [ :mood, :location ]
-
+    permitted_params += [:mood, :location]
+    
     # Type-specific fields based on journal_type
     case @journal_type
-    when "diary"
-      permitted_params += [ :diary_date, { gratitude_list: [], achievements: [] } ]
-    when "dream"
-      permitted_params += [ :dream_date, :lucidity_level, :dream_clarity, { dream_signs: [], dream_characters: [], dream_emotions: [] } ]
-    when "ritual"
-      permitted_params += [ :ritual_date, :ritual_type, :ritual_purpose, :ritual_outcome, :ritual_duration, { ritual_tools: [], ritual_deities: [] } ]
+    when 'diary'
+      permitted_params += [:diary_date, { gratitude_list: [], achievements: [] }]
+    when 'dream'
+      permitted_params += [:dream_date, :lucidity_level, :dream_clarity, { dream_signs: [], dream_characters: [], dream_emotions: [] }]
+    when 'ritual'
+      permitted_params += [:ritual_date, :ritual_type, :ritual_purpose, :ritual_outcome, :ritual_duration, { ritual_tools: [], ritual_deities: [] }]
     end
-
+    
     params.require(:journal_entry).permit(permitted_params)
   end
 
@@ -120,15 +114,5 @@ class JournalsController < ApplicationController
       end
       journal_entry.tags = tags
     end
-  end
-
-  # Save mood information to mood_histories table
-  def save_mood_history(journal_entry)
-    current_user.mood_histories.create(
-      mood: journal_entry.mood,
-      journal_entry: journal_entry,
-      recorded_at: journal_entry.created_at,
-      notes: "Extracted from #{journal_entry.journal_type} journal entry: #{journal_entry.title}"
-    )
   end
 end

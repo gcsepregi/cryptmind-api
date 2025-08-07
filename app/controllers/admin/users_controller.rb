@@ -2,6 +2,7 @@
 
 module Admin
   class UsersController < AdminControllerBase
+
     def index
       @user = User
       respond_index @user
@@ -37,9 +38,10 @@ module Admin
           updated_at: record["updated_at"],
           nickname: record["nickname"],
           sessions_count: active_session_counts[record["id"]] || 0,
-          journals_count: journal_entry_counts[record["id"]] || 0
+          journals_count: journal_entry_counts[record["id"]] || 0,
         }
       end
     end
+
   end
 end

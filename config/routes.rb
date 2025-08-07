@@ -22,9 +22,6 @@ Rails.application.routes.draw do
   put "/journals/:journal_type/:id", to: "journals#update"
   delete "/journals/:journal_type/:id", to: "journals#destroy"
 
-  # Mood histories routes
-  resources :mood_histories
-
   namespace :admin do
     get "/dashboard", to: "dashboard#index"
 
